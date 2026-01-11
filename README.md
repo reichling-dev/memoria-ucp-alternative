@@ -4,7 +4,7 @@ A comprehensive, feature-rich web application for managing FiveM roleplay server
 
 ## 🌟 Overview
 
-Aura Applications is a modern, full-stack management system designed specifically for FiveM roleplay servers. It provides a complete solution for handling player applications, support tickets, announcements, shop integration, and administrative oversight with a beautiful, responsive UI.
+JS-Applications is a modern, full-stack management system designed specifically for FiveM roleplay servers. It provides a complete solution for handling player applications, support tickets, announcements, shop integration, and administrative oversight with a beautiful, responsive UI.
 
 ## ✨ Key Features
 
