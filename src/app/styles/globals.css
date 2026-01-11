@@ -1,0 +1,120 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Test CSS */
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #f0f0f0 !important;
+}
+
+.test-css {
+  color: red !important;
+  background: blue !important;
+}
+ 
+@layer base {
+  :root {
+    --background: 0 0% 98%;
+    --foreground: 0 0% 10%;
+ 
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 10%;
+ 
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 10%;
+ 
+    --primary: 0 0% 15%;
+    --primary-foreground: 0 0% 98%;
+ 
+    --secondary: 0 0% 92%;
+    --secondary-foreground: 0 0% 10%;
+ 
+    --muted: 0 0% 94%;
+    --muted-foreground: 0 0% 45%;
+ 
+    --accent: 0 0% 90%;
+    --accent-foreground: 0 0% 10%;
+ 
+    --destructive: 0 65% 50%;
+    --destructive-foreground: 0 0% 98%;
+ 
+    --border: 0 0% 88%;
+    --input: 0 0% 88%;
+    --ring: 0 0% 20%;
+ 
+    --radius: 0.75rem;
+  }
+ 
+  .dark {
+    --background: 0 0% 8%;
+    --foreground: 0 0% 95%;
+ 
+    --card: 0 0% 10%;
+    --card-foreground: 0 0% 95%;
+ 
+    --popover: 0 0% 10%;
+    --popover-foreground: 0 0% 95%;
+ 
+    --primary: 0 0% 90%;
+    --primary-foreground: 0 0% 10%;
+ 
+    --secondary: 0 0% 16%;
+    --secondary-foreground: 0 0% 95%;
+ 
+    --muted: 0 0% 16%;
+    --muted-foreground: 0 0% 60%;
+ 
+    --accent: 0 0% 20%;
+    --accent-foreground: 0 0% 95%;
+ 
+    --destructive: 0 65% 50%;
+    --destructive-foreground: 0 0% 95%;
+ 
+    --border: 0 0% 20%;
+    --input: 0 0% 18%;
+    --ring: 0 0% 70%;
+  }
+}
+ 
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not(.dark):not(.light) {
+    --background: 0 0% 98%;
+    --foreground: 0 0% 10%;
+    
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 10%;
+    
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 10%;
+    
+    --primary: 0 0% 15%;
+    --primary-foreground: 0 0% 98%;
+    
+    --secondary: 0 0% 92%;
+    --secondary-foreground: 0 0% 10%;
+    
+    --muted: 0 0% 94%;
+    --muted-foreground: 0 0% 45%;
+    
+    --accent: 0 0% 90%;
+    --accent-foreground: 0 0% 10%;
+    
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 222.2 47.4% 11.2%;
+  }
+}
+
