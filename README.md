@@ -178,11 +178,6 @@ DISCORD_CLIENT_SECRET=your-discord-client-secret
 DISCORD_BOT_TOKEN=your-bot-token
 DISCORD_GUILD_ID=your-server-id
 
-# Role IDs (from Discord Server)
-ADMIN_ROLE_ID=role-id
-MODERATOR_ROLE_ID=role-id
-REVIEWER_ROLE_ID=role-id
-
 # PayPal (Optional)
 PAYPAL_CLIENT_ID=your-paypal-client-id
 PAYPAL_CLIENT_SECRET=your-paypal-client-secret
