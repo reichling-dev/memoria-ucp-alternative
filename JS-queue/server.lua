@@ -133,38 +133,53 @@ local function CanBypassQueue(identifier)
 end
 
 -- Token Management - Validates with website API
-local function ValidateTokenWithWebsite(token, callback)
+local function ValidateTokenWithWebsite(token)
     if not Config.EnableTokenAuth then
-        callback(true, {})
-        return
+        return true, {}
     end
     
     if not token or token == "" then
         DebugPrint("No token provided")
-        callback(false, {})
-        return
+        return false, {}
     end
     
     local url = WEBSITE_API_URL .. "?token=" .. token
+    local isValid = false
+    local tokenData = {}
+    local completed = false
     
     PerformHttpRequest(url, function(statusCode, response, headers)
         if statusCode == 200 then
-            local data = json.decode(response)
-            if data and data.valid then
+            local success, data = pcall(json.decode, response)
+            if success and data and data.valid then
                 DebugPrint("Token validated with website: " .. (data.username or "Unknown"))
-                callback(true, data)
+                isValid = true
+                tokenData = data
             else
-                DebugPrint("Token validation failed: " .. (data.error or "Unknown error"))
-                callback(false, data)
+                DebugPrint("Token validation failed: Invalid response format or data.valid = false")
             end
         else
-            DebugPrint("Token validation failed with status: " .. statusCode)
-            callback(false, {})
+            DebugPrint("Token validation failed with status: " .. statusCode .. " | Response: " .. tostring(response))
         end
+        completed = true
     end, 'GET', '', {
         ['Content-Type'] = 'application/json',
         ['x-api-key'] = WEBSITE_API_SECRET
     })
+    
+    -- Wait for the HTTP request to complete (max 5 seconds)
+    local timeout = 0
+    while not completed and timeout < 50 do
+        Wait(100)
+        timeout = timeout + 1
+    end
+    
+    if not completed then
+        DebugPrint("Token validation timed out")
+        return false, {}
+    end
+    
+    return isValid, tokenData
 end
 
 -- Token validation is now handled by the website API
@@ -538,61 +553,61 @@ AddEventHandler('playerConnecting', function(playerName, setKickReason, deferral
     
     -- Validate token with website API
     if Config.EnableTokenAuth then
-        ValidateTokenWithWebsite(token, function(isValid, tokenData)
-            if not isValid then
-                local errorCard = CreateAuthCard(Config.Messages['invalid_token'], true)
-                deferrals.presentCard(errorCard)
-                Wait(3000)
-                deferrals.done(Config.Messages['invalid_token'])
-                SendWebhook(
-                    "Connection Denied",
-                    "**Player:** " .. playerName .. "\n**Reason:** Invalid/No Token",
-                    15158332
-                )
-                return
-            end
-            
-            -- Token is valid, continue with connection
-            local checkingCard = CreateAuthCard("Checking server capacity...", false)
-            deferrals.presentCard(checkingCard)
-            
-            Wait(500)
-            
-            local playerCount = GetPlayerCount()
-            local availableSlots = GetAvailableSlots()
-            
-            -- Check if player can bypass queue
-            if CanBypassQueue(identifier) and availableSlots > 0 then
-                local connectCard = CreateConnectingCard(playerName)
-                deferrals.presentCard(connectCard)
-                Wait(1000)
-                deferrals.done()
-                DebugPrint("Admin bypass: " .. playerName)
-                SendWebhook(
-                    "Admin Bypass",
-                    "**Player:** " .. playerName .. "\n**Status:** Bypassed queue",
-                    15844367
-                )
-                return
-            end
-            
-            -- Check if server has available slots
-            if availableSlots > Config.ReservedSlots then
-                local connectCard = CreateConnectingCard(playerName)
-                deferrals.presentCard(connectCard)
-                Wait(1000)
-                deferrals.done()
-                DebugPrint("Direct connect: " .. playerName)
-                return
-            end
-            
-            -- Add to queue (no size limit)
-            local queueCard = CreateAuthCard("Adding to queue...", false)
-            deferrals.presentCard(queueCard)
-            local position = AddToQueue(identifier, deferrals, playerName, token)
-            
-            DebugPrint("Queue size: " .. #Queue)
-        end)
+        local isValid, tokenData = ValidateTokenWithWebsite(token)
+        
+        if not isValid then
+            local errorCard = CreateAuthCard(Config.Messages['invalid_token'], true)
+            deferrals.presentCard(errorCard)
+            Wait(3000)
+            deferrals.done(Config.Messages['invalid_token'])
+            SendWebhook(
+                "Connection Denied",
+                "**Player:** " .. playerName .. "\n**Reason:** Invalid/No Token\n**Token:** " .. (token or "None"),
+                15158332
+            )
+            return
+        end
+        
+        -- Token is valid, continue with connection
+        local checkingCard = CreateAuthCard("Checking server capacity...", false)
+        deferrals.presentCard(checkingCard)
+        
+        Wait(500)
+        
+        local playerCount = GetPlayerCount()
+        local availableSlots = GetAvailableSlots()
+        
+        -- Check if player can bypass queue
+        if CanBypassQueue(identifier) and availableSlots > 0 then
+            local connectCard = CreateConnectingCard(playerName)
+            deferrals.presentCard(connectCard)
+            Wait(1000)
+            deferrals.done()
+            DebugPrint("Admin bypass: " .. playerName)
+            SendWebhook(
+                "Admin Bypass",
+                "**Player:** " .. playerName .. "\n**Status:** Bypassed queue",
+                15844367
+            )
+            return
+        end
+        
+        -- Check if server has available slots
+        if availableSlots > Config.ReservedSlots then
+            local connectCard = CreateConnectingCard(playerName)
+            deferrals.presentCard(connectCard)
+            Wait(1000)
+            deferrals.done()
+            DebugPrint("Direct connect: " .. playerName)
+            return
+        end
+        
+        -- Add to queue (no size limit)
+        local queueCard = CreateAuthCard("Adding to queue...", false)
+        deferrals.presentCard(queueCard)
+        local position = AddToQueue(identifier, deferrals, playerName, token)
+        
+        DebugPrint("Queue size: " .. #Queue)
     else
         -- Token auth disabled, proceed normally
         local checkingCard = CreateAuthCard("Checking server capacity...", false)
@@ -705,22 +720,7 @@ exports('GetQueueList', function()
     return queueList
 end)
 
--- HTTP Callback for token validation (if using external API)
-function ValidateTokenWithAPI(token, callback)
-    PerformHttpRequest(Config.APIEndpoint, function(statusCode, response, headers)
-        if statusCode == 200 then
-            local data = json.decode(response)
-            callback(data.valid or false, data)
-        else
-            callback(false, nil)
-        end
-    end, 'POST', json.encode({
-        token = token,
-        apiKey = Config.APIKey
-    }), {
-        ['Content-Type'] = 'application/json'
-    })
-end
+
 
 print("^2[QUEUE]^7 Advanced Queue System loaded successfully!")
 print("^2[QUEUE]^7 Max Players: " .. Config.MaxPlayers)
