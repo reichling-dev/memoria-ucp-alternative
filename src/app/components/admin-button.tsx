@@ -12,10 +12,24 @@ export default function AdminButton() {
   const { data: session } = useSession()
   const { permissions } = usePermissions()
   const [mounted, setMounted] = useState(false)
+  const [forceUpdate, setForceUpdate] = useState(0)
 
   // Only render after mount to avoid hydration issues
   useEffect(() => {
     setMounted(true)
+  }, [])
+
+  // Listen for permission changes globally
+  useEffect(() => {
+    const handlePermissionsLoaded = () => {
+      console.log('Admin button reloading due to permissions change')
+      setForceUpdate(prev => prev + 1)
+    }
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('permissions-loaded', handlePermissionsLoaded)
+      return () => window.removeEventListener('permissions-loaded', handlePermissionsLoaded)
+    }
   }, [])
 
   // Show nothing if not authenticated

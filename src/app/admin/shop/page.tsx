@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Switch } from '@/components/ui/switch'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { usePermissions } from '@/hooks/use-permissions'
@@ -42,6 +43,8 @@ export default function AdminShopPage() {
   const [editing, setEditing] = useState<ShopProduct | null>(null)
   const [form, setForm] = useState<ShopProduct>(defaultProduct)
   const [saving, setSaving] = useState(false)
+  const [shopEnabled, setShopEnabled] = useState(true)
+  const [toggling, setToggling] = useState(false)
 
   const fetchProducts = useCallback(async () => {
     try {
@@ -58,6 +61,18 @@ export default function AdminShopPage() {
     }
   }, [toast])
 
+  const fetchShopSettings = useCallback(async () => {
+    try {
+      const res = await fetch('/api/shop/settings')
+      if (res.ok) {
+        const data = await res.json()
+        setShopEnabled(data.enabled ?? true)
+      }
+    } catch (error) {
+      console.error('Error fetching shop settings:', error)
+    }
+  }, [])
+
   // Guard non-admins
   useEffect(() => {
     if (permissionsLoading || status === 'loading') return
@@ -70,12 +85,40 @@ export default function AdminShopPage() {
       router.push('/')
     } else {
       fetchProducts()
+      fetchShopSettings()
     }
-  }, [status, permissions, permissionsLoading, router, fetchProducts])
+  }, [status, permissions, permissionsLoading, router, fetchProducts, fetchShopSettings])
 
   const resetForm = () => {
     setForm(defaultProduct)
     setEditing(null)
+  }
+
+  const handleToggleShop = async (enabled: boolean) => {
+    setToggling(true)
+    try {
+      const res = await fetch('/api/shop/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ enabled }),
+      })
+
+      if (!res.ok) {
+        toast({ title: 'Error', description: 'Failed to update shop settings', variant: 'destructive' })
+        return
+      }
+
+      setShopEnabled(enabled)
+      toast({
+        title: enabled ? 'Shop Enabled' : 'Shop Disabled',
+        description: enabled ? 'The shop page is now visible to users' : 'The shop page is now hidden from users',
+      })
+    } catch (error) {
+      console.error('Toggle shop error:', error)
+      toast({ title: 'Error', description: 'Unable to update shop settings', variant: 'destructive' })
+    } finally {
+      setToggling(false)
+    }
   }
 
   const handleSave = async () => {
@@ -174,6 +217,36 @@ export default function AdminShopPage() {
           </Link>
         </div>
       </div>
+
+      {/* Shop Toggle Card */}
+      <Card className="border-violet-500/20 bg-gradient-to-r from-violet-500/5 to-blue-500/5">
+        <CardContent className="pt-6">
+          <div className="flex items-center justify-between">
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-2">
+                <ShoppingBag className="h-5 w-5 text-violet-500" />
+                <h3 className="text-lg font-semibold">Shop Page Visibility</h3>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                {shopEnabled 
+                  ? 'The shop page is currently visible to all users'
+                  : 'The shop page is currently hidden from users'}
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className={`text-sm font-medium ${shopEnabled ? 'text-green-500' : 'text-red-500'}`}>
+                {shopEnabled ? 'Enabled' : 'Disabled'}
+              </span>
+              <Switch
+                checked={shopEnabled}
+                onCheckedChange={handleToggleShop}
+                disabled={toggling}
+                className="data-[state=checked]:bg-green-500"
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Form */}
       <Card>

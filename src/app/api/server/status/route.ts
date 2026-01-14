@@ -13,7 +13,15 @@ function parseStatusPayload(payload: Record<string, unknown>) {
   )
 
   const maxPlayers = coerceNumber(
-    payload?.maxPlayers ?? payload?.max_players ?? payload?.sv_maxclients ?? payload?.max_clients,
+    payload?.maxPlayers ?? 
+    payload?.max_players ?? 
+    payload?.sv_maxclients ?? 
+    payload?.svMaxClients ?? 
+    payload?.max_clients ?? 
+    payload?.maxClients ?? 
+    (payload?.vars as Record<string, unknown>)?.sv_maxclients ?? 
+    (payload?.vars as Record<string, unknown>)?.svMaxClients ?? 
+    (payload?.Data as Record<string, unknown>)?.sv_maxclients,
     serverStatusConfig.maxPlayersFallback
   )
 
@@ -41,7 +49,12 @@ async function fetchTxAdminStatus(playersUrl: string, infoUrl: string) {
     const info = await infoRes.json()
     const onlinePlayers = Array.isArray(players) ? players.length : coerceNumber(players?.length, 0)
     const maxPlayers = coerceNumber(
-      info?.vars?.sv_maxclients ?? info?.sv_maxclients ?? info?.max_clients,
+      info?.vars?.sv_maxclients ?? 
+      info?.vars?.svMaxClients ?? 
+      info?.sv_maxclients ?? 
+      info?.svMaxClients ?? 
+      info?.max_clients ?? 
+      info?.maxClients,
       serverStatusConfig.maxPlayersFallback
     )
     return { onlinePlayers, maxPlayers }

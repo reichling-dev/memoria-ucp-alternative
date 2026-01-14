@@ -33,6 +33,20 @@ const defaultPermissions: UserPermissions = {
 let permissionsCache: { data: UserPermissions; timestamp: number; userId: string } | null = null
 const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
 
+// Event system for permission changes
+const PERMISSIONS_LOADED_EVENT = 'permissions-loaded'
+const dispatchPermissionsLoaded = () => {
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent(PERMISSIONS_LOADED_EVENT))
+  }
+}
+
+// Function to clear cache (useful for admin role changes)
+export function clearPermissionsCache() {
+  permissionsCache = null
+  dispatchPermissionsLoaded()
+}
+
 export function usePermissions() {
   const { data: session, status } = useSession()
   const [permissions, setPermissions] = useState<UserPermissions>(defaultPermissions)
@@ -81,6 +95,8 @@ export function usePermissions() {
             timestamp: Date.now(),
             userId: userId || ''
           }
+          // Notify all components that permissions have loaded
+          dispatchPermissionsLoaded()
         } else {
           console.error('Permissions fetch failed with status:', response.status)
           setPermissions(defaultPermissions)

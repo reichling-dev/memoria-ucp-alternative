@@ -255,7 +255,7 @@ export const applicationConfig: ApplicationConfig = {
 
 export const serverStatusConfig: ServerStatusConfig = {
   connectAddress: 'cfx.re/join/vgjvze',
-  maxPlayersFallback: 128,
+  maxPlayersFallback: 48,
   queueEnabled: true,
   statusEndpoint: process.env.FIVEM_STATUS_ENDPOINT,
   cacheSeconds: 15,

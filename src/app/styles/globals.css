@@ -2,6 +2,40 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Smooth Scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.3);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #8b5cf6 0%, #3b82f6 100%);
+  border-radius: 10px;
+  border: 2px solid rgba(15, 23, 42, 0.3);
+  transition: all 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #7c3aed 0%, #2563eb 100%);
+  border-color: rgba(139, 92, 246, 0.3);
+}
+
+/* Firefox Scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #8b5cf6 rgba(15, 23, 42, 0.3);
+}
+
 /* Test CSS */
 body {
   font-family: 'Inter', sans-serif;
@@ -118,3 +152,69 @@ body {
   }
 }
 
+@layer components {
+  /* Enhanced Button Styles */
+  button, .btn {
+    @apply transition-all duration-300 ease-out;
+    @apply transform-gpu;
+  }
+
+  button:active, .btn:active {
+    @apply scale-95;
+  }
+
+  /* Gradient Button Enhancement */
+  button[class*="gradient"], .btn-gradient {
+    @apply relative overflow-hidden;
+    @apply shadow-lg hover:shadow-2xl;
+  }
+
+  button[class*="gradient"]::before, .btn-gradient::before {
+    content: '';
+    @apply absolute inset-0 opacity-0 transition-opacity duration-300;
+    background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+  }
+
+  button[class*="gradient"]:hover::before, .btn-gradient:hover::before {
+    @apply opacity-100;
+  }
+
+  /* Primary Button */
+  .btn-primary {
+    @apply bg-gradient-to-r from-violet-600 via-blue-600 to-purple-600;
+    @apply hover:from-violet-500 hover:via-blue-500 hover:to-purple-500;
+    @apply text-white font-semibold rounded-lg px-6 py-3;
+    @apply shadow-lg shadow-violet-500/30 hover:shadow-xl hover:shadow-violet-500/50;
+    @apply transform hover:scale-105 active:scale-95;
+    @apply transition-all duration-300;
+    @apply border border-white/10;
+  }
+
+  /* Secondary Button */
+  .btn-secondary {
+    @apply bg-slate-800/50 hover:bg-slate-700/60;
+    @apply text-white font-semibold rounded-lg px-6 py-3;
+    @apply border border-white/20 hover:border-violet-500/50;
+    @apply backdrop-blur-md;
+    @apply shadow-lg hover:shadow-xl;
+    @apply transform hover:scale-105 active:scale-95;
+    @apply transition-all duration-300;
+  }
+
+  /* Outline Button */
+  .btn-outline {
+    @apply bg-transparent hover:bg-white/5;
+    @apply text-white font-semibold rounded-lg px-6 py-3;
+    @apply border-2 border-white/30 hover:border-violet-500/70;
+    @apply backdrop-blur-sm;
+    @apply shadow-md hover:shadow-lg;
+    @apply transform hover:scale-105 active:scale-95;
+    @apply transition-all duration-300;
+  }
+
+  /* Icon Button Enhancement */
+  button[class*="rounded-full"], .btn-icon {
+    @apply hover:shadow-lg hover:shadow-violet-500/20;
+    @apply transform hover:scale-110 active:scale-95;
+  }
+}

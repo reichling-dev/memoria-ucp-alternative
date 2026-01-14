@@ -112,16 +112,18 @@ const FormSection = ({
   delay: number
 }) => (
   <motion.div
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    transition={{ delay, duration: 0.3 }}
+    initial={{ opacity: 0, x: -20 }}
+    animate={{ opacity: 1, x: 0 }}
+    transition={{ delay, duration: 0.4 }}
     className="space-y-6"
   >
-    <div className="flex items-center gap-3 pb-2 border-b border-border/50">
-      <svg className="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={section.icon} />
-      </svg>
-      <h3 className="text-lg font-semibold">{section.title}</h3>
+    <div className="flex items-center gap-3 pb-3 border-b border-violet-500/20">
+      <div className="p-2 rounded-lg bg-gradient-to-br from-violet-500/20 to-blue-500/20">
+        <svg className="w-5 h-5 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={section.icon} />
+        </svg>
+      </div>
+      <h3 className="text-xl font-bold bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent">{section.title}</h3>
     </div>
 
     {section.id === 'personal' && (
@@ -133,12 +135,12 @@ const FormSection = ({
             name={field.name}
             render={({ field: formField }) => (
               <FormItem>
-                <FormLabel className="text-sm font-medium">{field.label}</FormLabel>
+                <FormLabel className="text-sm font-semibold text-white/90">{field.label}</FormLabel>
                 <FormControl>
                   <Input
                     type={field.type === 'number' ? 'number' : 'text'}
                     placeholder={field.placeholder}
-                    className="bg-background"
+                    className="bg-slate-800/50 border-white/10 focus:border-violet-500/50 focus:ring-violet-500/20 transition-all"
                     {...formField}
                     onChange={(e) => field.type === 'number'
                       ? formField.onChange(e.target.value ? parseInt(e.target.value, 10) : '')
@@ -146,7 +148,7 @@ const FormSection = ({
                     }
                   />
                 </FormControl>
-                <FormDescription className="text-xs">{field.description}</FormDescription>
+                <FormDescription className="text-xs text-muted-foreground">{field.description}</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -164,15 +166,15 @@ const FormSection = ({
             name={field.name}
             render={({ field: formField }) => (
               <FormItem>
-                <FormLabel className="text-sm font-medium">{field.label}</FormLabel>
+                <FormLabel className="text-sm font-semibold text-white/90">{field.label}</FormLabel>
                 <FormControl>
                   <Input
                     placeholder={field.placeholder}
-                    className={index === 0 ? "bg-background font-mono text-sm" : "bg-background text-sm"}
+                    className={index === 0 ? "bg-slate-800/50 border-white/10 focus:border-violet-500/50 focus:ring-violet-500/20 font-mono text-sm transition-all" : "bg-slate-800/50 border-white/10 focus:border-violet-500/50 focus:ring-violet-500/20 text-sm transition-all"}
                     {...formField}
                   />
                 </FormControl>
-                <FormDescription className="text-xs">{field.description}</FormDescription>
+                <FormDescription className="text-xs text-muted-foreground">{field.description}</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -190,16 +192,16 @@ const FormSection = ({
             name={field.name}
             render={({ field: formField }) => (
               <FormItem>
-                <FormLabel className="text-sm font-medium">{field.label}</FormLabel>
+                <FormLabel className="text-sm font-semibold text-white/90">{field.label}</FormLabel>
                 <FormControl>
                   <Textarea
                     placeholder={field.placeholder}
-                    className="min-h-[120px] bg-background resize-none"
+                    className="min-h-[140px] bg-slate-800/50 border-white/10 focus:border-violet-500/50 focus:ring-violet-500/20 resize-none transition-all"
                     {...formField}
                   />
                 </FormControl>
-                <FormDescription className="text-xs flex justify-between">
-                  <span>{field.description}</span>
+                <FormDescription className="text-xs flex justify-between items-center">
+                  <span className="text-muted-foreground">{field.description}</span>
                   <CharacterCount current={formField.value.length} required={field.minLength || 0} />
                 </FormDescription>
                 <FormMessage />
@@ -456,44 +458,48 @@ export default function WhitelistForm() {
     if (!showPreview || !previewData) return null
 
     return (
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.95 }}
-          className="bg-background border border-border rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl"
+          initial={{ opacity: 0, scale: 0.9, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.9, y: 20 }}
+          className="bg-slate-900/95 backdrop-blur-xl border border-white/10 rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl"
         >
-          <div className="border-b border-border/50 bg-muted/20 px-6 py-4">
+          <div className="border-b border-white/10 bg-gradient-to-r from-violet-500/10 to-blue-500/10 px-6 py-5">
             <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold">Preview Your Application</h2>
+              <div>
+                <h2 className="text-2xl font-bold bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent">Preview Your Application</h2>
+                <p className="text-sm text-muted-foreground mt-1">Review your information before final submission</p>
+              </div>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setShowPreview(false)}
-                className="h-8 w-8 p-0"
+                className="h-10 w-10 p-0 hover:bg-white/10 rounded-full transition-all"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </Button>
             </div>
-            <p className="text-sm text-muted-foreground mt-1">Review your information before final submission</p>
           </div>
 
-          <div className="overflow-y-auto max-h-[calc(90vh-180px)] p-6 space-y-6">
+          <div className="overflow-y-auto max-h-[calc(90vh-200px)] p-6 space-y-6">
             {applicationConfig.sections.map((section) => (
               <div key={section.id} className="space-y-4">
-                <div className="flex items-center gap-3 pb-2 border-b border-border/50">
-                  <svg className="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={section.icon} />
-                  </svg>
+                <div className="flex items-center gap-3 pb-3 border-b border-violet-500/20">
+                  <div className="p-2 rounded-lg bg-gradient-to-br from-violet-500/20 to-blue-500/20">
+                    <svg className="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={section.icon} />
+                    </svg>
+                  </div>
                   <h3 className="text-lg font-semibold">{section.title}</h3>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {section.fields.map((field) => (
                     <div key={field.name} className={field.type === 'textarea' ? 'md:col-span-2' : ''}>
-                      <div className="text-sm font-medium text-muted-foreground mb-1">{field.label}</div>
-                      <div className={`bg-muted/30 rounded-md p-3 ${field.type === 'textarea' ? 'min-h-[100px] whitespace-pre-wrap' : ''}`}>
+                      <div className="text-sm font-medium text-violet-300 mb-2">{field.label}</div>
+                      <div className={`bg-slate-800/50 border border-white/10 rounded-lg p-3 ${field.type === 'textarea' ? 'min-h-[100px] whitespace-pre-wrap' : ''}`}>
                         {previewData[field.name] || <span className="text-muted-foreground/50 italic">Not provided</span>}
                       </div>
                     </div>
@@ -508,17 +514,19 @@ export default function WhitelistForm() {
               if (!type || !(type.fields || []).length) return null
               return (
                 <div className="space-y-4">
-                  <div className="flex items-center gap-3 pb-2 border-b border-border/50">
-                    <svg className="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6M4 6h16v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6z" />
-                    </svg>
+                  <div className="flex items-center gap-3 pb-3 border-b border-violet-500/20">
+                    <div className="p-2 rounded-lg bg-gradient-to-br from-violet-500/20 to-blue-500/20">
+                      <svg className="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6M4 6h16v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6z" />
+                      </svg>
+                    </div>
                     <h3 className="text-lg font-semibold">Additional Questions</h3>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {(type.fields || []).map((f) => (
                       <div key={f.id} className={f.type === 'textarea' ? 'md:col-span-2' : ''}>
-                        <div className="text-sm font-medium text-muted-foreground mb-1">{f.label}</div>
-                        <div className={`bg-muted/30 rounded-md p-3 ${f.type === 'textarea' ? 'min-h-[100px] whitespace-pre-wrap' : ''}`}>
+                        <div className="text-sm font-medium text-violet-300 mb-2">{f.label}</div>
+                        <div className={`bg-slate-800/50 border border-white/10 rounded-lg p-3 ${f.type === 'textarea' ? 'min-h-[100px] whitespace-pre-wrap' : ''}`}>
                           {(() => {
                             const val = customValues[f.id]
                             if (f.type === 'checkbox') return val ? 'Yes' : 'No'
@@ -533,11 +541,12 @@ export default function WhitelistForm() {
             })()}
           </div>
 
-          <div className="border-t border-border/50 bg-muted/20 px-6 py-4 flex gap-3 justify-end">
+          <div className="border-t border-white/10 bg-gradient-to-r from-violet-500/5 to-blue-500/5 px-6 py-4 flex gap-3 justify-end">
             <Button
               variant="outline"
               onClick={() => setShowPreview(false)}
               disabled={isSubmitting}
+              className="border-white/10 hover:bg-white/5"
             >
               <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -547,7 +556,7 @@ export default function WhitelistForm() {
             <Button
               onClick={handleFinalSubmit}
               disabled={isSubmitting}
-              className="min-w-[160px]"
+              className="min-w-[160px] bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-700 hover:to-blue-700 shadow-lg shadow-violet-500/20"
             >
               {isSubmitting ? (
                 <>
@@ -638,38 +647,46 @@ export default function WhitelistForm() {
               )}
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                  <Card className="border-border/50">
-                    <CardHeader className="border-b border-border/50 bg-muted/20">
+                  <Card className="border-white/10 bg-slate-900/40 backdrop-blur-sm shadow-2xl overflow-hidden">
+                    <CardHeader className="border-b border-white/10 bg-gradient-to-r from-violet-500/10 via-blue-500/10 to-purple-500/10">
                       <div className="space-y-1">
                         <div className="flex items-center justify-between">
-                          <h2 className="text-3xl font-bold tracking-tight">{applicationConfig.ui.formTitle}</h2>
+                          <h2 className="text-3xl font-black tracking-tight bg-gradient-to-r from-white via-violet-200 to-blue-200 bg-clip-text text-transparent">
+                            {applicationConfig.ui.formTitle}
+                          </h2>
                           {lastSaved && (
-                            <span className="text-xs text-muted-foreground">
+                            <span className="text-xs text-muted-foreground flex items-center gap-2 bg-slate-800/50 px-3 py-1.5 rounded-full">
+                              <svg className="w-3 h-3 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                              </svg>
                               Last saved: {lastSaved.toLocaleTimeString()}
                             </span>
                           )}
                         </div>
                         <p className="text-sm text-muted-foreground">{applicationConfig.ui.formDescription}</p>
                         {appTypes.length > 0 && (
-                          <div className="mt-3 flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-between">
-                            <div className="text-sm text-muted-foreground">Choose what to apply for</div>
-                            <div className="flex gap-2 items-center">
-                              <select
-                                className="bg-background border border-border rounded-md px-3 py-2 text-sm"
-                                value={selectedType}
-                                onChange={(e) => setSelectedType(e.target.value)}
-                              >
-                                {appTypes.map((t) => (
-                                  <option key={t.id} value={t.id}>{t.name}</option>
-                                ))}
-                              </select>
+                          <div className="mt-4 flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between p-4 bg-slate-800/30 rounded-lg border border-white/5">
+                            <div className="text-sm font-medium text-white/80 flex items-center gap-2">
+                              <svg className="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z" />
+                              </svg>
+                              Choose Application Type
                             </div>
+                            <select
+                              className="bg-slate-800/80 border border-white/10 rounded-lg px-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 transition-all"
+                              value={selectedType}
+                              onChange={(e) => setSelectedType(e.target.value)}
+                            >
+                              {appTypes.map((t) => (
+                                <option key={t.id} value={t.id}>{t.name}</option>
+                              ))}
+                            </select>
                           </div>
                         )}
                         
                       </div>
                     </CardHeader>
-                    <CardContent className="p-6 space-y-8">
+                    <CardContent className="p-8 space-y-10 bg-gradient-to-b from-transparent to-slate-900/20">
                       {applicationConfig.sections.map((section, index) => (
                         <FormSection
                           key={section.id}
@@ -685,28 +702,30 @@ export default function WhitelistForm() {
                         if (!type || !(type.fields || []).length) return null
                         return (
                           <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: 0.15, duration: 0.3 }}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.5, duration: 0.4 }}
                             className="space-y-6"
                           >
-                            <div className="flex items-center gap-3 pb-2 border-b border-border/50">
-                              <svg className="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6M4 6h16v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6z" />
-                              </svg>
-                              <h3 className="text-lg font-semibold">Additional Questions</h3>
+                            <div className="flex items-center gap-3 pb-3 border-b border-violet-500/20">
+                              <div className="p-2 rounded-lg bg-gradient-to-br from-violet-500/20 to-blue-500/20">
+                                <svg className="w-5 h-5 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6M4 6h16v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6z" />
+                                </svg>
+                              </div>
+                              <h3 className="text-xl font-bold bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent">Additional Questions</h3>
                             </div>
                             <div className="space-y-6">
                               {(type.fields || []).map((f) => (
                                 <div key={f.id}>
-                                  <label className="text-sm font-medium mb-2 block">
-                                    {f.label} {f.required && <span className="text-red-500">*</span>}
+                                  <label className="text-sm font-semibold text-white/90 mb-2 block">
+                                    {f.label} {f.required && <span className="text-red-400">*</span>}
                                   </label>
 
                                   {f.type === 'textarea' && (
                                     <Textarea
                                       placeholder="Type your answer..."
-                                      className="min-h-[120px] bg-background resize-none"
+                                      className="min-h-[140px] bg-slate-800/50 border-white/10 focus:border-violet-500/50 focus:ring-violet-500/20 resize-none transition-all"
                                       value={customValues[f.id] ?? ''}
                                       onChange={(e) => setCustomValues(prev => ({ ...prev, [f.id]: e.target.value }))}
                                     />
@@ -716,7 +735,7 @@ export default function WhitelistForm() {
                                     <Input
                                       type={f.type === 'number' ? 'number' : 'text'}
                                       placeholder="Type your answer..."
-                                      className="bg-background"
+                                      className="bg-slate-800/50 border-white/10 focus:border-violet-500/50 focus:ring-violet-500/20 transition-all"
                                       value={customValues[f.id] ?? ''}
                                       onChange={(e) => setCustomValues(prev => ({ ...prev, [f.id]: f.type === 'number' ? (e.target.value ? Number(e.target.value) : '') : e.target.value }))}
                                     />
@@ -724,7 +743,7 @@ export default function WhitelistForm() {
 
                                   {f.type === 'select' && (
                                     <select
-                                      className="bg-background border border-border rounded-md px-3 py-2 text-sm"
+                                      className="w-full bg-slate-800/50 border border-white/10 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 transition-all"
                                       value={customValues[f.id] ?? ''}
                                       onChange={(e) => setCustomValues(prev => ({ ...prev, [f.id]: e.target.value }))}
                                     >
@@ -739,7 +758,7 @@ export default function WhitelistForm() {
                                     <div className="flex items-center gap-2">
                                       <input
                                         type="checkbox"
-                                        className="h-4 w-4"
+                                        className="h-4 w-4 rounded border-white/10 text-violet-600 focus:ring-violet-500/50"
                                         checked={!!customValues[f.id]}
                                         onChange={(e) => setCustomValues(prev => ({ ...prev, [f.id]: e.target.checked }))}
                                       />
@@ -760,14 +779,16 @@ export default function WhitelistForm() {
                   </Card>
 
                   <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.4, duration: 0.3 }}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.6, duration: 0.4 }}
+                    className="relative group"
                   >
+                    <div className="absolute -inset-1 bg-gradient-to-r from-violet-600 via-blue-600 to-purple-600 rounded-xl blur opacity-30 group-hover:opacity-60 transition duration-300" />
                     <Button
                       type="submit"
                       disabled={isSubmitting || (!!reapplyInfo && !reapplyInfo.canReapply)}
-                      className="w-full h-12 text-base font-semibold"
+                      className="relative w-full h-14 text-base font-bold bg-gradient-to-r from-violet-600 via-blue-600 to-purple-600 hover:from-violet-700 hover:via-blue-700 hover:to-purple-700 shadow-xl shadow-violet-500/20 transition-all duration-300 hover:scale-[1.02]"
                       size="lg"
                     >
                       <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -785,17 +806,26 @@ export default function WhitelistForm() {
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.4 }}
           >
-            <Card className="border-dashed border-2">
-              <CardContent className="flex flex-col items-center justify-center py-16">
-                <svg className="w-20 h-20 text-muted-foreground/30 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
-                <h3 className="text-2xl font-bold mb-2">Authentication Required</h3>
-                <p className="text-muted-foreground text-center max-w-md mb-6">
+            <Card className="border-dashed border-2 border-white/10 bg-slate-900/40 backdrop-blur-sm">
+              <CardContent className="flex flex-col items-center justify-center py-20 px-8">
+                <div className="relative mb-8">
+                  <div className="absolute inset-0 bg-gradient-to-r from-violet-500/20 to-blue-500/20 rounded-full blur-xl" />
+                  <svg className="w-24 h-24 text-violet-400/50 relative" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                </div>
+                <h3 className="text-3xl font-bold mb-3 bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent">Authentication Required</h3>
+                <p className="text-muted-foreground text-center max-w-md mb-8 text-base">
                   Please sign in with Discord to access the whitelist application form and verify your identity.
                 </p>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span>Secure authentication via Discord OAuth</span>
+                </div>
               </CardContent>
             </Card>
           </motion.div>
