@@ -1,0 +1,5 @@
+onlyBuiltDependencies:
+  - bufferutil
+  - sharp
+  - unrs-resolver
+  - zlib-sync
