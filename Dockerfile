@@ -1,11 +1,8 @@
-FROM node:24.12.0-bookworm AS base
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable
+FROM node:24.12.0-bookworm
 
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
 COPY . .
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
-
 EXPOSE 3000
-
-CMD ["pnpm", "dev"]
+CMD ["npm", "run", "dev"]
